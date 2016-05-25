@@ -1,0 +1,100 @@
+*** Settings ***
+Library           String
+Library           Collections
+Library           BuiltIn
+Resource          AxaVariables.txt
+Resource          VariablesAxaInit.txt
+Resource          KeywordsConnexion.txt
+Resource          VariablesAxaVirements.txt
+Resource          KeywordsVirement.txt
+Variables         C:/Users/Public/Documents/ROBOTFramework/axa_variables.py
+Library           ../../Users/Public/Documents/ROBOTFramework/csvLibrary.py
+
+*** Test Cases ***
+ConnexionPPRD
+    log    ${TEST_NAME}
+    GetTimePPRD
+    EnvironnementPPRD
+    ${listdata}=    read csv file    C:/Users/Public/Documents/ROBOTFramework/dataAxaBanquePPRD.csv
+    log List    ${listdata}
+    : FOR    ${element}    IN    @{listdata}
+    \    ${element}=    Convert To String    ${element[0]}
+    \    ${listElement}=    Split String    ${element}
+    \    ${NumcompteElement}=    Set Variable    ${listElement[0]}
+    \    log    ${NumcompteElement}
+    \    sleep    4
+    \    AppiumLibrary.Click Element    ${xpath_numeroclient}
+    \    ${source}=    AppiumLibrary.Get Source
+    \    log    ${source}
+    \    Run Keyword If    '${NumcompteElement}'!='1095353'    AppiumLibrary.Swipe    470    600    470
+    \    ...    600    2
+    \    AppiumLibrary.Input Text    ${xpath_numeroclient}    ${NumcompteElement}
+    \    sleep    5
+    \    Run Keyword If    '${NumcompteElement}'=='1095353'    connexionPPRD
+    \    Run Keyword If    '${NumcompteElement}'!='1095353'    connexionPPRD2
+
+VirementImmediatPPRD
+    [Setup]    axa_init
+    log    ${TEST_NAME}
+    GetTimePPRD
+    EnvironnementPPRD
+    TestSuiteImmPPRD
+
+VirementDifferePPRD
+    [Setup]    axa_init
+    log    ${TEST_NAME}
+    GetTimePPRD
+    EnvironnementPPRD
+    ${listdata}=    read csv file    C:/Users/Public/Documents/ROBOTFramework/dataAxaBanquePPRD.csv
+    log List    ${listdata}
+    : FOR    ${element}    IN    @{listdata}
+    \    ${element}=    Convert To String    ${element[0]}
+    \    ${listElement}=    Split String    ${element}
+    \    ${NumcompteElement}=    Set Variable    ${listElement[0]}
+    \    log    ${NumcompteElement}
+    \    sleep    5
+    \    AppiumLibrary.Click Element    ${xpath_numeroclient}
+    \    ${source}=    AppiumLibrary.Get Source
+    \    log    ${source}
+    \    Run Keyword If    '${NumcompteElement}'=='1095353'    AppiumLibrary.Swipe    470    600    470
+    \    ...    600    2
+    \    Run Keyword If    '${NumcompteElement}'!='1095353'    AppiumLibrary.Swipe    470    600    470
+    \    ...    600    2
+    \    AppiumLibrary.Input Text    ${xpath_numeroclient}    ${NumcompteElement}
+    \    sleep    10
+    \    Run Keyword If    '${NumcompteElement}'=='1095353'    connexionPPRD
+    \    Run Keyword If    '${NumcompteElement}'!='1095353'    connexionPPRD2
+    \    TestVirdiffPPRD
+
+VirementPermanentPPRD
+    [Setup]    axa_init
+    log    ${TEST_NAME}
+    GetTimeQUA
+    AppiumLibrary.Click Element    ${xpath_environnementPPRD}
+    ${listdata}=    read csv file    C:/Users/Public/Documents/ROBOTFramework/dataAxaBanquePPRD.csv
+    log List    ${listdata}
+    : FOR    ${element}    IN    @{listdata}
+    \    ${element}=    Convert To String    ${element[0]}
+    \    ${listElement}=    Split String    ${element}
+    \    ${NumcompteElement}=    Set Variable    ${listElement[0]}
+    \    log    ${NumcompteElement}
+    \    sleep    5
+    \    AppiumLibrary.Click Element    ${xpath_numeroclient}
+    \    ${source}=    AppiumLibrary.Get Source
+    \    log    ${source}
+    \    Run Keyword If    '${NumcompteElement}'=='1095353'    AppiumLibrary.Swipe    470    600    470
+    \    ...    600    2
+    \    AppiumLibrary.Input Text    ${xpath_numeroclient}    ${NumcompteElement}
+    \    sleep    10
+    \    Run Keyword If    '${NumcompteElement}'=='1095353'    connexionPPRD
+    \    Run Keyword If    '${NumcompteElement}'!='1095353'    connexionPPRD2
+    \    TestVirpermaPPRD
+
+VisualiserRIBComptePPRD
+    [Setup]    axa_init
+    log    ${TEST_NAME}
+    GetTimePPRD
+    EnvironnementPPRD
+    ${source}=    AppiumLibrary.Get Source
+    ${Extract}=    Get Regexp Matches    ${source}    (?<=content-desc='${libelle_virement} ${heure_locale}').*(?=resource-id="")
+    log    ${Extract}
